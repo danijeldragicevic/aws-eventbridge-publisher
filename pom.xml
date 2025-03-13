@@ -30,10 +30,10 @@
             <artifactId>spring-boot-starter-web</artifactId>
         </dependency>
 
-        <!-- AWS SDK for Java (IAM) -->
+        <!-- AWS SDK for Java (EventBridge) -->
         <dependency>
             <groupId>software.amazon.awssdk</groupId>
-            <artifactId>iam</artifactId>
+            <artifactId>eventbridge</artifactId>
             <version>${aws.sdk.version}</version>
         </dependency>
 
