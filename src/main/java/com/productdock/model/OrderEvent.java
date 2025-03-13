@@ -1,26 +1,31 @@
 package com.productdock.model;
 
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
-@NoArgsConstructor
 @AllArgsConstructor
 @Data
 public class OrderEvent {
-    private String source;
-    private String detailType;
-    private String orderId;
-    private double orderAmount;
-    private Customer customer;
+    @NonNull
+    String source;
+    @NonNull
+    String detailType;
+    @NonNull
+    String orderId;
+    @NonNull
+    Double orderAmount;
+    @NonNull
+    Customer customer;
 
-    @NoArgsConstructor
     @AllArgsConstructor
     @Data
     public static class Customer {
-        private String address;
-        private String city;
-        private String state;
-        private String countryCode;
+        @NonNull
+        String address;
+        @NonNull
+        String city;
+        @NonNull
+        String state;
+        @NonNull
+        String countryCode;
     }
 }
