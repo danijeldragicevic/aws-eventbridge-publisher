@@ -1,16 +1,12 @@
 package com.productdock.repository;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.productdock.exception.AwsServiceException;
-import com.productdock.model.OrderEvent;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Repository;
 import software.amazon.awssdk.services.eventbridge.EventBridgeClient;
 import software.amazon.awssdk.services.eventbridge.model.EventBridgeException;
 import software.amazon.awssdk.services.eventbridge.model.PutEventsRequest;
 import software.amazon.awssdk.services.eventbridge.model.PutEventsRequestEntry;
-import software.amazon.awssdk.services.eventbridge.model.PutEventsResponse;
 
 @Slf4j
 @Repository
@@ -22,23 +18,13 @@ public class OrderRepository {
         this.eventBridgeClient = eventBridgeClient;
     }
 
-    public void publishOrder(OrderEvent orderEvent) {
-        ObjectMapper objectMapper = new ObjectMapper();
-        String orderEventAsString;
-
-        try {
-            orderEventAsString = objectMapper.writeValueAsString(orderEvent);
-        } catch (JsonProcessingException e) {
-            log.error("Failed to serialize order event", e);
-            throw new RuntimeException(e);
-        }
-
+    public void publishOrder(String eventSource, String detailType, String eventDetail) {
         try {
             PutEventsRequestEntry eventEntry = PutEventsRequestEntry.builder()
-                    .eventBusName("Orders")
-                    .source(orderEvent.getSource())
-                    .detailType(orderEvent.getDetailType())
-                    .detail(orderEventAsString)
+                    .eventBusName("Orders") //TODO move to configuration file
+                    .source(eventSource)
+                    .detailType(detailType)
+                    .detail(eventDetail)
                     .build();
 
             PutEventsRequest request = PutEventsRequest.builder()
