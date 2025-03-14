@@ -8,6 +8,10 @@ server.port: 8081
 # This profile must be configured in ~/.aws/credentials using `aws configure`
 aws.profile: default
 
+# AWS EventBridge configuration
+aws.eventbridge.region: eu-north-1
+aws.eventbridge.event-bus-name: Orders
+
 # Logging level
 logging.level.org.springframework: INFO
 logging.level.com.productdock: DEBUG

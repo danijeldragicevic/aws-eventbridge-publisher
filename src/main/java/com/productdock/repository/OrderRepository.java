@@ -2,6 +2,7 @@ package com.productdock.repository;
 
 import com.productdock.exception.AwsServiceException;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Repository;
 import software.amazon.awssdk.services.eventbridge.EventBridgeClient;
 import software.amazon.awssdk.services.eventbridge.model.EventBridgeException;
@@ -13,15 +14,17 @@ import software.amazon.awssdk.services.eventbridge.model.PutEventsRequestEntry;
 public class OrderRepository {
 
     private final EventBridgeClient eventBridgeClient;
+    private final String eventBusName;
 
-    public OrderRepository(EventBridgeClient eventBridgeClient) {
+    public OrderRepository(EventBridgeClient eventBridgeClient, @Value("${aws.eventbridge.event-bus-name}") String eventBusName) {
         this.eventBridgeClient = eventBridgeClient;
+        this.eventBusName = eventBusName;
     }
 
     public void publishOrder(String eventSource, String detailType, String eventDetail) {
         try {
             PutEventsRequestEntry eventEntry = PutEventsRequestEntry.builder()
-                    .eventBusName("Orders") //TODO move to configuration file
+                    .eventBusName(eventBusName)
                     .source(eventSource)
                     .detailType(detailType)
                     .detail(eventDetail)
