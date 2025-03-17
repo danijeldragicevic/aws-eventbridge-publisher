@@ -16,7 +16,10 @@ public class OrderRepository {
     private final EventBridgeClient eventBridgeClient;
     private final String eventBusName;
 
-    public OrderRepository(EventBridgeClient eventBridgeClient, @Value("${aws.eventbridge.event-bus-name}") String eventBusName) {
+    public OrderRepository(
+                EventBridgeClient eventBridgeClient,
+                @Value("${aws.eventbridge.event-bus-name}") String eventBusName) {
+
         this.eventBridgeClient = eventBridgeClient;
         this.eventBusName = eventBusName;
     }
