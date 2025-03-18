@@ -4,7 +4,7 @@ import lombok.*;
 
 @AllArgsConstructor
 @Data
-public class OrderEvent {
+public class  OrderEvent {
     @NonNull
     String source;
     @NonNull
