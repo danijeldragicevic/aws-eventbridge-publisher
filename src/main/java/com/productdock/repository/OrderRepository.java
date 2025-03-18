@@ -19,7 +19,6 @@ public class OrderRepository {
     public OrderRepository(
                 EventBridgeClient eventBridgeClient,
                 @Value("${aws.eventbridge.event-bus-name}") String eventBusName) {
-
         this.eventBridgeClient = eventBridgeClient;
         this.eventBusName = eventBusName;
     }
@@ -38,7 +37,6 @@ public class OrderRepository {
                     .build();
 
             eventBridgeClient.putEvents(request);
-            log.info("Order event published successfully");
 
         } catch (EventBridgeException e) {
             log.error("Error occurred in repository layer: {}", e.getMessage());
