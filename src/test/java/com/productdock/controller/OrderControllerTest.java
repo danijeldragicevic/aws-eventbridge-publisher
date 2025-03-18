@@ -32,6 +32,8 @@ public class OrderControllerTest {
 
     private final ObjectMapper objectMapper = new ObjectMapper();
 
+    private OrderEvent testOrderEvent;
+
     @BeforeEach
     void setUp() {
         MockitoAnnotations.openMocks(this);
@@ -39,10 +41,8 @@ public class OrderControllerTest {
                 .standaloneSetup(orderController)
                 .setControllerAdvice(new _GlobalExceptionHandler())
                 .build();
-    }
 
-    private OrderEvent createTestOrderEvent() {
-        return new OrderEvent(
+        testOrderEvent = new OrderEvent(
                 "com.productdock.orders",
                 "OrderPlaced",
                 "test12",
@@ -53,16 +53,13 @@ public class OrderControllerTest {
 
     @Test
     void shouldCreateOrderAndReturnSuccessResponse() throws Exception {
-        // Given (Test Data)
-        OrderEvent orderEvent = createTestOrderEvent();
-
         // When (Mocking Service Call)
         doNothing().when(orderService).createOrder(any(OrderEvent.class));
 
         // Then (Perform POST Request and Validate Response)
         mockMvc.perform(post("/orders")
                         .contentType(MediaType.APPLICATION_JSON)
-                        .content(objectMapper.writeValueAsString(orderEvent)))
+                        .content(objectMapper.writeValueAsString(testOrderEvent)))
                 .andExpect(status().isCreated())
                 .andExpect(jsonPath("$.message").value("Order created successfully"))
                 .andDo(print());
@@ -73,9 +70,6 @@ public class OrderControllerTest {
 
     @Test
     void shouldReturnServiceUnavailableWhenOrderServiceFails() throws Exception {
-        // Given (Test Data)
-        OrderEvent orderEvent = createTestOrderEvent();
-
         // When (Mock Service to Throw Exception)
         doThrow(new OrderRepositoryException("Failed to publish order event", new RuntimeException("Simulated Error")))
                 .when(orderService).createOrder(any(OrderEvent.class));
@@ -83,7 +77,7 @@ public class OrderControllerTest {
         // Then (Perform POST Request & Validate Error Response)
         mockMvc.perform(post("/orders")
                         .contentType(MediaType.APPLICATION_JSON)
-                        .content(objectMapper.writeValueAsString(orderEvent)))
+                        .content(objectMapper.writeValueAsString(testOrderEvent)))
                 .andExpect(status().isServiceUnavailable())
                 .andExpect(jsonPath("$.error").value("Failed to publish order event"))
                 .andDo(print());
