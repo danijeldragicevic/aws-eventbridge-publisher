@@ -1,6 +1,6 @@
 package com.productdock.repository;
 
-import com.productdock.exception.AwsServiceException;
+import com.productdock.exception.OrderRepositoryException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Repository;
@@ -24,7 +24,7 @@ public class OrderRepository {
         this.eventBusName = eventBusName;
     }
 
-    public void publishOrder(String eventSource, String detailType, String eventDetail) {
+    public void publishOrder(String eventSource, String detailType, String eventDetail) throws OrderRepositoryException {
         try {
             PutEventsRequestEntry eventEntry = PutEventsRequestEntry.builder()
                     .eventBusName(eventBusName)
@@ -41,7 +41,8 @@ public class OrderRepository {
             log.info("Order event published successfully");
 
         } catch (EventBridgeException e) {
-            throw new AwsServiceException("Failed to publish order event", e);
+            log.error("Error occurred in repository layer: {}", e.getMessage());
+            throw new OrderRepositoryException("Failed to publish order event", e);
         }
     }
 }
