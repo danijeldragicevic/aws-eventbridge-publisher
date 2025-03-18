@@ -1,6 +1,8 @@
 package com.productdock.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.productdock.exception.OrderRepositoryException;
+import com.productdock.exception._GlobalExceptionHandler;
 import com.productdock.model.OrderEvent;
 import com.productdock.service.OrderService;
 import org.junit.jupiter.api.BeforeEach;
@@ -33,19 +35,26 @@ public class OrderControllerTest {
     @BeforeEach
     void setUp() {
         MockitoAnnotations.openMocks(this);
-        mockMvc = MockMvcBuilders.standaloneSetup(orderController).build();
+        mockMvc = MockMvcBuilders
+                .standaloneSetup(orderController)
+                .setControllerAdvice(new _GlobalExceptionHandler())
+                .build();
     }
 
-    @Test
-    void shouldCreateOrderAndReturnSuccessResponse() throws Exception {
-        // Given (Test Data)
-        OrderEvent orderEvent = new OrderEvent(
+    private OrderEvent createTestOrderEvent() {
+        return new OrderEvent(
                 "com.productdock.orders",
                 "OrderPlaced",
                 "test12",
                 112.1,
                 new OrderEvent.Customer("123 Main Street", "AnyCity", "WA", "US")
         );
+    }
+
+    @Test
+    void shouldCreateOrderAndReturnSuccessResponse() throws Exception {
+        // Given (Test Data)
+        OrderEvent orderEvent = createTestOrderEvent();
 
         // When (Mocking Service Call)
         doNothing().when(orderService).createOrder(any(OrderEvent.class));
@@ -63,15 +72,23 @@ public class OrderControllerTest {
     }
 
     @Test
-    void shouldReturnBadRequestWhenInvalidPayload() throws Exception {
-        // Given (Invalid JSON: Missing required fields)
-        String invalidJson = "{ \"source\": \"com.productdock.orders\" }";
+    void shouldReturnServiceUnavailableWhenOrderServiceFails() throws Exception {
+        // Given (Test Data)
+        OrderEvent orderEvent = createTestOrderEvent();
 
-        // Then (Perform POST Request and Expect 400 Bad Request)
+        // When (Mock Service to Throw Exception)
+        doThrow(new OrderRepositoryException("Failed to publish order event", new RuntimeException("Simulated Error")))
+                .when(orderService).createOrder(any(OrderEvent.class));
+
+        // Then (Perform POST Request & Validate Error Response)
         mockMvc.perform(post("/orders")
                         .contentType(MediaType.APPLICATION_JSON)
-                        .content(invalidJson))
-                .andExpect(status().isBadRequest())
+                        .content(objectMapper.writeValueAsString(orderEvent)))
+                .andExpect(status().isServiceUnavailable())
+                .andExpect(jsonPath("$.error").value("Failed to publish order event"))
                 .andDo(print());
+
+        // Verify the service was called
+        verify(orderService, times(1)).createOrder(any(OrderEvent.class));
     }
 }
