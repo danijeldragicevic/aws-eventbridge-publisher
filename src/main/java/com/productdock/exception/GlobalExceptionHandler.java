@@ -13,7 +13,7 @@ import java.time.LocalDateTime;
 
 @Slf4j
 @ControllerAdvice
-public class _GlobalExceptionHandler {
+public class GlobalExceptionHandler {
 
     @ExceptionHandler(OrderRepositoryException.class)
     public ResponseEntity<ErrorResponse> handleOrderRepositoryException(OrderRepositoryException exception, WebRequest request) {

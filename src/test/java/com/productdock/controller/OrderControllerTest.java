@@ -2,7 +2,7 @@ package com.productdock.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.productdock.exception.OrderRepositoryException;
-import com.productdock.exception._GlobalExceptionHandler;
+import com.productdock.exception.GlobalExceptionHandler;
 import com.productdock.model.OrderEvent;
 import com.productdock.service.OrderService;
 import org.junit.jupiter.api.BeforeEach;
@@ -39,7 +39,7 @@ public class OrderControllerTest {
         MockitoAnnotations.openMocks(this);
         mockMvc = MockMvcBuilders
                 .standaloneSetup(orderController)
-                .setControllerAdvice(new _GlobalExceptionHandler())
+                .setControllerAdvice(new GlobalExceptionHandler())
                 .build();
 
         testOrderEvent = new OrderEvent(
