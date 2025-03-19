@@ -21,6 +21,9 @@ import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
+/**
+ * Test class for OrderController.
+ */
 public class OrderControllerTest {
     private MockMvc mockMvc;
 
@@ -51,8 +54,11 @@ public class OrderControllerTest {
         );
     }
 
+    /**
+     * Tests the createOrder endpoint for successful order creation.
+     */
     @Test
-    void shouldCreateOrderAndReturnSuccessResponse() throws Exception {
+    void createOrder_success() throws Exception {
         // When (Mocking Service Call)
         doNothing().when(orderService).createOrder(any(OrderEvent.class));
 
@@ -68,8 +74,11 @@ public class OrderControllerTest {
         verify(orderService, times(1)).createOrder(any(OrderEvent.class));
     }
 
+    /**
+     * Tests the createOrder endpoint for service failure.
+     */
     @Test
-    void shouldReturnServiceUnavailableWhenOrderServiceFails() throws Exception {
+    void createOrder_serviceFailure() throws Exception {
         // When (Mock Service to Throw Exception)
         doThrow(new OrderRepositoryException("Failed to publish order event", new RuntimeException("Simulated Error")))
                 .when(orderService).createOrder(any(OrderEvent.class));

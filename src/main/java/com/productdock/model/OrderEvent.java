@@ -2,6 +2,9 @@ package com.productdock.model;
 
 import lombok.*;
 
+/**
+ * Model class representing an order event.
+ */
 @AllArgsConstructor
 @Data
 public class  OrderEvent {

@@ -13,6 +13,7 @@
           <option value="order-event-publisher" />
           <option value="order-event-publisher" />
           <option value="order-event-publisher" />
+          <option value="order-event-publisher" />
         </list>
       </option>
       <option name="ignoredPackages">
@@ -22,11 +23,13 @@
           <option value="io.netty:netty-codec-http:4.1.105.Final" />
           <option value="io.netty:netty-common:4.1.105.Final" />
           <option value="org.apache.tomcat.embed:tomcat-embed-core:10.1.18" />
+          <option value="org.apache.tomcat.embed:tomcat-embed-websocket:10.1.18" />
         </list>
       </option>
       <option name="ignoredReasons">
         <list>
           <option value="Fixed in branch" />
+          <option value="Not exploitable" />
           <option value="Not exploitable" />
           <option value="Not exploitable" />
           <option value="Not exploitable" />

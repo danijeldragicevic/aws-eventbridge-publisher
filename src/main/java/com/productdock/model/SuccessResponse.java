@@ -5,6 +5,9 @@ import lombok.Data;
 
 import java.util.Map;
 
+/**
+ * Model class representing success response.
+ */
 @AllArgsConstructor
 @Data
 public class SuccessResponse {

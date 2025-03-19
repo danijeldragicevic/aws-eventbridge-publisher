@@ -7,12 +7,20 @@ import software.amazon.awssdk.auth.credentials.DefaultCredentialsProvider;
 import software.amazon.awssdk.regions.Region;
 import software.amazon.awssdk.services.eventbridge.EventBridgeClient;
 
+/**
+ * Configuration class for AWS services.
+ */
 @Configuration
 public class AwsConfig {
 
     @Value("${aws.eventbridge.region}")
     private String region;
 
+    /**
+     * Creates an EventBridgeClient bean.
+     *
+     * @return EventBridgeClient configured with the specified region and default credentials.
+     */
     @Bean
     public EventBridgeClient eventBridgeClient() {
         return EventBridgeClient.builder()

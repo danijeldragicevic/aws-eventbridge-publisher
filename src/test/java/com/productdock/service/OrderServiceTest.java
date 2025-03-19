@@ -15,6 +15,9 @@ import org.mockito.MockitoAnnotations;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
+/**
+ * Test class for OrderService.
+ */
 class OrderServiceTest {
 
     @Mock
@@ -42,8 +45,11 @@ class OrderServiceTest {
         );
     }
 
+    /**
+     * Tests the createOrder method for successful order creation.
+     */
     @Test
-    void shouldCreateOrderSuccessfully() throws Exception {
+    void createOrder_success() throws Exception {
         // Given (Mock JSON Serialization)
         String jsonOrderEvent = "{\"source\":\"com.productdock.orders\",\"detailType\":\"OrderPlaced\",\"orderId\":\"test12\"}";
         when(objectMapper.writeValueAsString(testOrderEvent)).thenReturn(jsonOrderEvent);
@@ -59,8 +65,11 @@ class OrderServiceTest {
         );
     }
 
+    /**
+     * Tests the createOrder method for JSON processing exception.
+     */
     @Test
-    void shouldThrowOrderServiceExceptionWhenJsonProcessingFails() throws Exception {
+    void createOrder_jsonProcessingException() throws Exception {
         // Given (Mock ObjectMapper Failure)
         when(objectMapper.writeValueAsString(testOrderEvent)).thenThrow(new JsonProcessingException("Mock JSON error") {});
 
@@ -72,8 +81,11 @@ class OrderServiceTest {
         verify(orderRepository, never()).publishOrder(any(), any(), any());
     }
 
+    /**
+     * Tests the createOrder method for repository exception.
+     */
     @Test
-    void shouldThrowOrderRepositoryExceptionWhenPublishingFails() throws Exception {
+    void createOrder_repositoryException() throws Exception {
         // Given (Mock JSON Serialization)
         String jsonOrderEvent = "{\"source\":\"com.productdock.orders\",\"detailType\":\"OrderPlaced\",\"orderId\":\"test12\"}";
         when(objectMapper.writeValueAsString(testOrderEvent)).thenReturn(jsonOrderEvent);

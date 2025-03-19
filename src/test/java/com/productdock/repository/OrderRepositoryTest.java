@@ -15,6 +15,9 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.*;
 
+/**
+ * Test class for OrderRepository.
+ */
 class OrderRepositoryTest {
 
     @Mock
@@ -23,16 +26,18 @@ class OrderRepositoryTest {
     @InjectMocks
     private OrderRepository orderRepository;
 
-    private final String testEventBusName = "test-event-bus";
-
     @BeforeEach
     void setUp() {
         MockitoAnnotations.openMocks(this);
+        String testEventBusName = "test-event-bus";
         orderRepository = new OrderRepository(eventBridgeClient, testEventBusName);
     }
 
+    /**
+     * Tests the publishOrder method for successful order publishing.
+     */
     @Test
-    void shouldPublishOrderSuccessfully() {
+    void publishOrder_success() {
         // Given (Mock EventBridgeClient Response)
         PutEventsResponse mockResponse = PutEventsResponse.builder().build();
         when(eventBridgeClient.putEvents(any(PutEventsRequest.class))).thenReturn(mockResponse);
@@ -44,8 +49,11 @@ class OrderRepositoryTest {
         verify(eventBridgeClient, times(1)).putEvents(any(PutEventsRequest.class));
     }
 
+    /**
+     * Tests the publishOrder method for EventBridge failure.
+     */
     @Test
-    void shouldThrowOrderRepositoryExceptionWhenEventBridgeFails() {
+    void publishOrder_eventBridgeException() {
         // Given (Mock EventBridgeClient Failure)
         when(eventBridgeClient.putEvents(any(PutEventsRequest.class)))
                 .thenThrow(EventBridgeException.builder().message("Mock EventBridge error").build());
