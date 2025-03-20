@@ -4,13 +4,9 @@ spring.application.name: order-event-publisher
 # Server port
 server.port: 8081
 
-# AWS credentials profile (Used by DefaultCredentialsProvider)
-# This profile must be configured in ~/.aws/credentials using `aws configure`
-aws.profile: default
-
 # AWS EventBridge configuration
-aws.eventbridge.region: eu-north-1
-aws.eventbridge.event-bus-name: Orders
+aws.eventbridge.region: ${AWS_REGION}
+aws.eventbridge.event-bus-name: ${AWS_EVENT_BUS_NAME}
 
 # Logging level
 logging.level.org.springframework: INFO
