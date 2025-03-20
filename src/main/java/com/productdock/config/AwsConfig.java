@@ -19,6 +19,9 @@ public class AwsConfig {
     /**
      * Creates an EventBridgeClient bean.
      *
+     * The client will be configured with the specified region and will automatically fetch
+     * login credentials from the IAM role associated with the EC2 instance.
+     *
      * @return EventBridgeClient configured with the specified region and default credentials.
      */
     @Bean
