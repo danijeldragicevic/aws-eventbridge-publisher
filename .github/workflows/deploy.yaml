@@ -36,3 +36,18 @@ jobs:
 
       - name: Run tests
         run: mvn test
+
+  deploy:
+    needs: test
+    runs-on: ubuntu-latest
+    steps:
+      - name: Upload JAR to EC2
+        uses: appleboy/scp-action@v0.1.7
+        with:
+          host: ${{ secrets.EC2_HOST }}
+          username: ${{ secrets.EC2_USERNAME }}
+          port: ${{ secrets.EC2_SCP_PORT }}
+          key: ${{ secrets.EC2_SSH_KEY }}
+          source: "/target/aws-eventbridge-publisher.jar"
+          target: /home/${{ secrets.EC2_USERNAME }}/aws-eventbridge-publisher
+          
