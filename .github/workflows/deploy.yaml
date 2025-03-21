@@ -25,7 +25,7 @@ jobs:
         uses: actions/upload-artifact@v3
         with:
           name: aws-eventbridge-publisher
-          path: /target/aws-eventbridge-publisher.jar
+          path: ./target/aws-eventbridge-publisher.jar
 
   test:
     needs: build
@@ -51,7 +51,7 @@ jobs:
         uses: actions/download-artifact@v3
         with:
           name: aws-eventbridge-publisher
-          path: /target
+          path: ./target
 
       - name: Upload JAR artifact to EC2
         uses: appleboy/scp-action@v0.1.7
@@ -60,6 +60,6 @@ jobs:
           username: ${{ secrets.EC2_USERNAME }}
           port: ${{ secrets.EC2_SCP_PORT }}
           key: ${{ secrets.EC2_SSH_KEY }}
-          source: "/target/aws-eventbridge-publisher.jar"
+          source: "./target/aws-eventbridge-publisher.jar"
           target: /home/${{ secrets.EC2_USERNAME }}/aws-eventbridge-publisher
           overwrite: true
