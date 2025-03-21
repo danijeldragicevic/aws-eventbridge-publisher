@@ -13,6 +13,9 @@ import org.springframework.web.context.request.WebRequest;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 
+/**
+ * Test class for GlobalExceptionHandler.
+ */
 class GlobalExceptionHandlerTest {
 
     private GlobalExceptionHandler exceptionHandler;

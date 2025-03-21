@@ -5,10 +5,10 @@
     <modelVersion>4.0.0</modelVersion>
 
     <groupId>com.productdock</groupId>
-    <artifactId>order-event-publisher</artifactId>
-    <version>1.0-SNAPSHOT</version>
+    <artifactId>aws-eventbridge-publisher</artifactId>
+    <version>1.0.0-SNAPSHOT</version>
 
-    <name>order-event-publisher</name>
+    <name>aws-eventbridge-publisher</name>
     <description>Send order events to the AWS EventBridge</description>
 
     <!-- 🔹 Inherit Spring Boot dependencies -->
