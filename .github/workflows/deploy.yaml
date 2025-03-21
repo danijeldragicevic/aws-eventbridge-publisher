@@ -48,6 +48,6 @@ jobs:
           username: ${{ secrets.EC2_USERNAME }}
           port: ${{ secrets.EC2_SCP_PORT }}
           key: ${{ secrets.EC2_SSH_KEY }}
-          source: "/target/aws-eventbridge-publisher.jar"
+          source: "./target/aws-eventbridge-publisher.jar"
           target: /home/${{ secrets.EC2_USERNAME }}/aws-eventbridge-publisher
-          
+          overwrite: true
