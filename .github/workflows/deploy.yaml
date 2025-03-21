@@ -62,6 +62,6 @@ jobs:
           username: ${{ secrets.EC2_USERNAME }}
           port: ${{ secrets.EC2_SCP_PORT }}
           key: ${{ secrets.EC2_SSH_KEY }}
-          source: "./artifacts/aws-eventbridge-publisher.jar" # Corrected path
+          source: "./artifacts/*.jar" # Corrected path
           target: /home/${{ secrets.EC2_USERNAME }}/aws-eventbridge-publisher
           overwrite: true
