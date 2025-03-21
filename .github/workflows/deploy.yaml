@@ -21,11 +21,11 @@ jobs:
       - name: Build the JAR file
         run: mvn clean package -DskipTests
 
-      - name: Upload JAR as an artifact
-        uses: actions/upload-artifact@v3
+      - name: Upload artifact
+        uses: actions/upload-artifact@v4
         with:
-          name: aws-eventbridge-publisher
-          path: ./target/aws-eventbridge-publisher.jar
+          name: artifacts
+          path: target/*.jar
 
   test:
     needs: build
@@ -47,11 +47,9 @@ jobs:
     needs: test
     runs-on: ubuntu-latest
     steps:
-      - name: Download JAR artifact
-        uses: actions/download-artifact@v3
+      - uses: actions/download-artifact@v4
         with:
-          name: aws-eventbridge-publisher
-          path: ./target
+          name: artifacts
 
       - name: Upload JAR artifact to EC2
         uses: appleboy/scp-action@v0.1.7
