@@ -1,0 +1,19 @@
+# Spring application name
+spring.application.name: order-event-publisher
+
+# Server port
+server.port: 8081
+
+# AWS EventBridge configuration
+aws.eventbridge.region: ${AWS_REGION}
+aws.eventbridge.event-bus-name: ${AWS_EVENT_BUS_NAME}
+
+# Logging level
+logging.level.org.springframework: INFO
+logging.level.com.productdock: DEBUG
+
+# Enable throwing NoHandlerFoundException for non-existing endpoints
+spring.mvc.throw-exception-if-no-handler-found: true
+
+# Disable default resource mappings
+spring.web.resources.add-mappings: false

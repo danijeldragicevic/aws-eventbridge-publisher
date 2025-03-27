@@ -1,0 +1,114 @@
+name: Build and Deploy to EC2 instance
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  # Build the Docker image and saves it as an artifact
+  build-docker-image:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Set up JDK 17
+        uses: actions/setup-java@v3
+        with:
+          distribution: 'temurin'
+          java-version: '17'
+
+      - name: Build JAR file
+        run: mvn clean package
+
+      - name: Build Docker Image
+        run: docker build -t aws-eventbridge-publisher:latest .
+
+      - name: Save Docker Image as Artifact
+        run: docker save -o docker-image.tar aws-eventbridge-publisher:latest
+
+      - name: Upload Docker Image Artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: docker-image
+          path: docker-image.tar
+
+      - name: Clean Up Docker Image Tarball
+        run: rm -f docker-image.tar
+
+  # Push Docker image to the Amazon ECR
+  push-to-ecr:
+    needs: build-docker-image
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Download Docker Image Artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: docker-image
+          path: .
+
+      - name: Load Docker Image
+        run: docker load -i docker-image.tar
+
+      - name: Verify AWS CLI & Docker
+        run: |
+          aws --version
+          docker --version
+
+      - name: Log in to Amazon ECR
+        run: |
+          aws configure set aws_access_key_id ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws configure set aws_secret_access_key ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws configure set region ${{ secrets.AWS_REGION }}
+          aws ecr get-login-password --region ${{ secrets.AWS_REGION }} | docker login --username AWS --password-stdin ${{ secrets.ECR_REPOSITORY_URL }}
+
+      - name: Tag Docker Image
+        run: docker tag aws-eventbridge-publisher:latest ${{ secrets.ECR_REPOSITORY_URL }}/aws-eventbridge-publisher:latest
+
+      - name: Push Docker Image to Amazon ECR
+        run: docker push ${{ secrets.ECR_REPOSITORY_URL }}/aws-eventbridge-publisher:latest
+
+      - name: Clean Up Docker Image Tarball
+        run: rm -f docker-image.tar
+
+# Pull Docker container from Amazon ECR and run it on EC2 instance
+  run-on-ec2:
+    needs: push-to-ecr
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v3
+
+      - name: Setup SSH Key
+        run: |
+          mkdir -p ~/.ssh
+          echo "${{ secrets.EC2_SSH_KEY }}" > ~/.ssh/aws_key.pem
+          chmod 600 ~/.ssh/aws_key.pem
+          ssh-keyscan -H ${{ secrets.EC2_HOST }} >> ~/.ssh/known_hosts
+
+      - name: SSH into EC2 and Run Container
+        run: |
+          ssh -o StrictHostKeyChecking=no -i ~/.ssh/aws_key.pem ${{ secrets.EC2_USERNAME }}@${{ secrets.EC2_HOST }} << 'EOF'
+            echo "Logging into AWS ECR..."
+            aws ecr get-login-password --region ${{ secrets.AWS_REGION }} | docker login --username AWS --password-stdin ${{ secrets.ECR_REPOSITORY_URL }}
+          
+            echo "Pulling latest Docker image..."
+            docker pull ${{ secrets.ECR_REPOSITORY_URL }}/aws-eventbridge-publisher:latest
+          
+            echo "Stopping old container (if running)..."
+            docker stop aws-publisher-app || true
+            docker rm aws-publisher-app || true
+          
+            echo "Cleaning up old Docker images..."
+            docker image prune -f
+          
+            echo "Running new container with environment variables..."
+            docker run -d --name aws-publisher-app -p 8081:8081 \
+                          -e AWS_REGION=${{ secrets.AWS_REGION }} \
+                          -e AWS_EVENT_BUS_NAME=${{ secrets.AWS_EVENT_BUS_NAME }} \
+                          ${{ secrets.ECR_REPOSITORY_URL }}/aws-eventbridge-publisher:latest
+          EOF
